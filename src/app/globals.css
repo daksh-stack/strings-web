@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens — the visual system from the build specification.
+ * Hierarchy comes from typography, spacing and contrast, not bright colour.
+ * The acid-mint accent is deliberately rationed: focal points, active states,
+ * and small technical annotations only.
+ */
+@theme {
+  --color-graphite: #101112; /* primary background */
+  --color-surface: #17191b; /* secondary surfaces */
+  --color-elevated: #1d2022; /* elevated surfaces */
+  --color-ink: #f3f2ed; /* primary text, warm off-white */
+  --color-muted: #a0a5aa; /* secondary text */
+  --color-faint: #6f7478; /* tertiary text / annotations */
+  --color-line: #303438; /* hairline borders */
+  --color-accent: #b8f36b; /* restrained acid mint */
+  --color-ice: #9fc3d8; /* optional secondary accent, diagrams/status only */
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+
+  --max-width-shell: 82.5rem; /* ~1320px desktop content width */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background: var(--color-graphite);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-graphite);
+}
+
+/* Visible, consistent focus for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Scroll reveal (components/motion/Reveal.tsx). CSS-only transitions; */
+/* the component only toggles data attributes via IntersectionObserver */
+/* ------------------------------------------------------------------ */
+[data-reveal] {
+  transition:
+    opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+    translate 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-reveal="hidden"] {
+  opacity: 0;
+  translate: 0 1.25rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    transition: none;
+  }
+  [data-reveal="hidden"] {
+    opacity: 1;
+    translate: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Engineering Workbench motion: a request packet travels the pipeline */
+/* and node rings pulse in sequence. Delicate, and fully removed for   */
+/* reduced-motion visitors (the static diagram still explains itself).*/
+/* ------------------------------------------------------------------ */
+/* The packet is an SVG circle driven by <animateMotion>; reduced-motion
+   hides it entirely (see below). Node dots pulse via CSS. */
+@keyframes workbench-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.workbench-node-dot {
+  animation: workbench-pulse 3.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workbench-node-dot {
+    animation: none;
+  }
+  .workbench-packet {
+    display: none;
+  }
+}
+
+/* Systems-flow stage connector draw-in (sections/SystemsFlow.tsx) */
+@keyframes flow-line-grow {
+  from {
+    scale: 0 1;
+  }
+  to {
+    scale: 1 1;
+  }
+}
+
+[data-reveal="shown"] .flow-line {
+  animation: flow-line-grow 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: left center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal="shown"] .flow-line {
+    animation: none;
+  }
+}
